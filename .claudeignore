@@ -1,0 +1,83 @@
+# Files agents should NOT read automatically. Raw instrument files, the local store, ERDDAP
+# caches and the sensitivity register must stay out of the model's context unless the user
+# explicitly points to a specific file.
+# (Claude Code honours .claudeignore; other agents: treat this as the do-not-read list.)
+
+# Sea-Bird CTD
+*.hex
+*.dat
+*.bl
+*.hdr
+*.mrk
+*.xmlcon
+*.con
+*.psa
+*.cnv
+*.btl
+*.ros
+*.asc
+
+# Teledyne RDI ADCP
+*.000
+*.001
+*.002
+*.pd0
+*.PD0
+*.ENR
+*.ENS
+*.ENX
+*.STA
+*.LTA
+*.N1R
+*.N2R
+*.NMS
+*.VMO
+*.mmt
+
+# Met loggers and containers
+*.toa5
+*.tob1
+*.log
+*.nc
+*.nc4
+*.cdf
+*.h5
+*.hdf5
+*.mat
+*.odv
+
+# Tabular / databases
+*.rds
+*.rda
+*.RData
+*.duckdb
+*.duckdb.wal
+*.sqlite
+*.db
+*.xml
+*.xlsx
+*.xls
+*.ods
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.arrow
+
+# Credentials
+.Renviron
+.env
+
+data/
+raw/
+store/
+cache/
+registry/
+outputs/
+output/
+results/
+private/
+scratch/
+
+# The data root default location (outside the repo, listed for clarity)
+# ~/OAIT_data/

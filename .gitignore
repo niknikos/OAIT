@@ -1,0 +1,120 @@
+# OAIT holds INSTRUCTIONS ONLY — never data. These rules are a safety net so that raw or
+# processed oceanographic data can never be committed by accident. Do not loosen them.
+# A second net, scripts/check-no-data.sh, runs in the pre-commit hook and in CI.
+
+# --- Sea-Bird CTD (raw, configuration, processed) ---
+*.hex
+*.dat
+*.bl
+*.hdr
+*.mrk
+*.xmlcon
+*.con
+*.psa
+*.cnv
+*.btl
+*.ros
+*.asc
+
+# --- Teledyne RDI ADCP (raw PD0, VmDas, WinRiver, navigation) ---
+*.000
+*.001
+*.002
+*.pd0
+*.PD0
+*.ENR
+*.ENS
+*.ENX
+*.STA
+*.LTA
+*.N1R
+*.N2R
+*.NMS
+*.VMO
+*.mmt
+*.whp
+
+# --- Meteorological loggers (Campbell TOA5/TOB1, generic logs) ---
+*.toa5
+*.tob1
+*.log
+
+# --- Gridded / scientific containers ---
+*.nc
+*.nc4
+*.cdf
+*.h5
+*.hdf5
+*.mat
+*.odv
+
+# --- Tabular and database formats ---
+*.rds
+*.rda
+*.RData
+*.duckdb
+*.duckdb.wal
+*.sqlite
+*.db
+*.xml
+*.xlsx
+*.xls
+*.ods
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.arrow
+
+# --- Working directories where data/outputs might land ---
+data/
+raw/
+store/
+cache/
+registry/
+outputs/
+output/
+results/
+private/
+scratch/
+
+# --- Rendered figures (may carry station positions or restricted-area tracks) ---
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.svg
+*.tif
+*.tiff
+*.kml
+*.kmz
+*.gpx
+*.shp
+*.gpkg
+*.geojson
+# keep small site/logo assets explicitly with: git add -f docs/assets/...
+
+# --- Credentials (ERDDAP logins, tokens) ---
+.Renviron
+.env
+*.netrc
+*credentials*
+*secret*
+
+# --- R / RStudio cruft ---
+.Rproj.user/
+.Rhistory
+.Ruserdata
+*.Rproj
+
+# --- Quarto / site build ---
+/_site/
+/.quarto/
+*.html
+/*_files/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

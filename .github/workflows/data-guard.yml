@@ -1,0 +1,32 @@
+name: Data guard
+
+# Second net behind .gitignore and the pre-commit hook: a contributor who has not enabled
+# the hook, or who used `git add -f` / `--no-verify`, is still stopped here before merge.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check-no-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Refuse data files
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="origin/${{ github.base_ref }}"
+          else
+            base="${{ github.event.before }}"
+            # First push to a new branch has no meaningful "before"; check the whole tree.
+            if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+              base="--all"
+            fi
+          fi
+          sh scripts/check-no-data.sh "$base"

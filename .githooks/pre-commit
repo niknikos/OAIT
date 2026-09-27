@@ -1,0 +1,75 @@
+#!/bin/sh
+#
+# 1. Refuse commits that stage anything resembling data (scripts/check-no-data.sh).
+# 2. Stamp OAIT's version and date into VERSION (and the README line).
+#
+#   * The patch level bumps automatically, once per commit.
+#   * To bump the minor or major level, edit VERSION by hand before committing —
+#     the hook keeps a hand-set version and only refreshes the date.
+#
+# Enable once per clone:
+#
+#   git config core.hooksPath .githooks
+#
+set -e
+
+repo_root=$(git rev-parse --show-toplevel)
+version_file="$repo_root/VERSION"
+readme="$repo_root/README.md"
+git_dir=$(git rev-parse --git-dir)
+
+# The data guard runs on every commit, merges included.
+sh "$repo_root/scripts/check-no-data.sh"
+
+# Leave merges and rebases alone for stamping; they replay commits that are already stamped.
+if [ -e "$git_dir/MERGE_HEAD" ] || [ -e "$git_dir/rebase-merge" ] || [ -e "$git_dir/rebase-apply" ]; then
+  exit 0
+fi
+
+read_version() {
+  sed -n 's/^version:[[:space:]]*//p' | head -n 1
+}
+
+head_version=$(git show HEAD:VERSION 2>/dev/null | read_version || true)
+if [ -f "$version_file" ]; then
+  file_version=$(read_version < "$version_file")
+else
+  file_version=""
+fi
+
+if [ -z "$file_version" ]; then
+  new_version="0.1.0"
+elif [ "$file_version" != "$head_version" ]; then
+  # Hand-set version (or the very first commit of VERSION) — keep it as is.
+  new_version="$file_version"
+else
+  major=${file_version%%.*}
+  rest=${file_version#*.}
+  minor=${rest%%.*}
+  patch=${rest#*.}
+  case "$patch" in
+    ''|*[!0-9]*) patch=0 ;;
+  esac
+  new_version="$major.$minor.$((patch + 1))"
+fi
+
+today=$(date +%Y-%m-%d)
+
+printf 'version: %s\ndate: %s\n' "$new_version" "$today" > "$version_file"
+git add -- "$version_file"
+
+# Mirror the stamp into the README, but never sweep unstaged README edits into
+# this commit: skip if the working copy differs from what is already staged.
+if [ -f "$readme" ] && git diff --quiet -- "$readme"; then
+  tmp="$readme.versiontmp"
+  sed "s|<!-- version -->.*<!-- /version -->|<!-- version -->**Version $new_version** ($today)<!-- /version -->|" \
+    "$readme" > "$tmp"
+  if cmp -s "$tmp" "$readme"; then
+    rm -f "$tmp"
+  else
+    mv "$tmp" "$readme"
+    git add -- "$readme"
+  fi
+fi
+
+exit 0
